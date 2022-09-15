@@ -1,0 +1,281 @@
+{% comment %}
+
+Code created by JadePuma
+Instructions - https://jadepuma.com/blogs/shopify-tutorials/klaviyo-sign-up-form-section-for-the-flex-theme
+Last editted - 14Sep22
+ 
+{% endcomment %}
+
+{% comment %} Assign object as block or section {% endcomment %}
+{% if type == 'block' %}
+  {%- assign object = block -%}
+{% else %}
+  {%- assign object = section -%}
+{% endif %}
+
+{% comment %} Content Settings {% endcomment %}
+{%- assign background_image = object.settings.background_image -%}
+{%- assign image_darken = object.settings.image_darken -%}
+{% comment %} End content settings {% endcomment %}
+
+{% comment %} Is the color set to transparent? {% endcomment %}
+{%- assign text_alpha = object.settings.text_color | color_extract: 'alpha' -%}
+
+{%- capture section_css -%}
+
+  {% if background_image != blank %}
+  .section.has-background {
+      background-image: url( {{ background_image | img_url: '2000x' }} );
+    }
+  {% endif %}
+
+  .section {
+    background-color: {{ object.settings.background_color }};
+  }
+
+  .newsletter-container {
+    {% if object.settings.width == 'wide' %}
+    width: 100%;
+    {% endif %}
+  }
+
+  .newsletter__text {
+    color: {% if text_alpha != 0 %}{{ object.settings.text_color }}{% else %}{{ settings.regular_color }}{% endif %}
+  }
+
+.newsletter__wrapper {
+    padding: 0; 
+    max-width: 100%;
+}
+
+{%- endcapture -%}
+
+{% style %}
+  #shopify-section-{{ object.id }} {
+    padding-top: {{ object.settings.padding_top }}px;
+    padding-bottom: {{ object.settings.padding_bottom }}px;
+    padding-left: {{ object.settings.padding_left }}px;
+    padding-right: {{ object.settings.padding_right }}px;
+    {% if object.settings.width == 'wide' %}
+      width: 100%;
+    {% elsif object.settings.width == 'half' %}
+      width: 50%;
+    {% endif %}
+  }
+
+  #shopify-section-{{ object.id }} .newsletter__wrapper {
+    {% if object.settings.width == 'half' %}
+      max-width: 100%;
+    {% endif %}
+  }
+
+  {% render 'css-loop',
+          css: section_css,
+          id: object.id
+  %}
+  {% render 'css-loop',
+          css: object.settings.custom_css,
+          id: object.id
+  %}
+{% endstyle %}
+
+{% comment %} HTML markup {% endcomment %}
+<section class="section newsletter-section newsletter-section--is-width-{{ object.settings.width }}
+                {{ object.settings.css_class }}
+                {{ newsletter_class }}
+                is-width-{{ object.settings.width }}
+                {% if background_alpha != 0 or gradient_alpha != 0 or background_image != blank %}
+                  has-background
+                {% endif %}
+                {% if background_image != blank %}
+                  dark-overlay-{{ image_darken }}
+                {% endif %}"
+                {% if object.settings.animation != "none" %}
+                  data-scroll-class="{{ object.settings.animation }}"
+                {% endif %} >
+  <div class="newsletter-container is-flex">
+
+    <div class="newsletter__wrapper column one-whole">
+      <div class="newsletter__text-wrapper">
+        
+        <div class="is-hidden-mobile-only" >
+          {{ object.settings.klaviyo_code }}
+        </div>
+        <div class="is-hidden-desktop-only" >
+          {{ object.settings.klaviyo_code_mobile }}
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+
+{
+  "name": "Klaviyo Newsletter",
+  "class": "newsletter",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "klaviyo_code",
+      "label": "Klaviyo desktop code"
+    },
+    {
+      "type": "textarea",
+      "id": "klaviyo_code_mobile",
+      "label": "Klaviyo mobile code"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#E5E5E5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Background image"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image",
+      "info": "1600 x 300px recommended"
+    },
+    {
+      "type": "checkbox",
+      "id": "image_darken",
+      "label": "Darken image",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "wide",
+      "options": [
+        {
+          "value": "half",
+          "label": "Half"
+        },
+        {
+          "value": "standard",
+          "label": "Standard"
+        },
+        {
+          "value": "wide",
+          "label": "Wide"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top spacing",
+      "min": 0,
+      "max": 80,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom spacing",
+      "default": 0,
+      "min": 0,
+      "max": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "Left spacing",
+      "min": 0,
+      "max": 80,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "Right spacing",
+      "default": 0,
+      "min": 0,
+      "max": 80,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "animation",
+      "label": "Animation",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "fadeIn",
+          "label": "Fade in"
+        },
+        {
+          "value": "fadeInDown",
+          "label": "Fade in down"
+        },
+        {
+          "value": "fadeInLeft",
+          "label": "Fade in left"
+        },
+        {
+          "value": "fadeInRight",
+          "label": "Fade in right"
+        },
+        {
+          "value": "slideInLeft",
+          "label": "Slide in left"
+        },
+        {
+          "value": "slideInRight",
+          "label": "Slide in right"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Advanced",
+      "info": "[Learn more](https://help.outofthesandbox.com/hc/en-us/articles/360022329373)"
+    },
+    {
+      "type": "text",
+      "id": "css_class",
+      "label": "CSS Class"
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "presets": [{
+    "name": "Klaviyo Newsletter",
+    "category": "Social",
+    "settings": {
+    }
+  }]
+}
+
+{% endschema %}
