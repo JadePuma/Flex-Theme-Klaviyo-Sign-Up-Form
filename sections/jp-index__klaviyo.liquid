@@ -1,8 +1,7 @@
 {% comment %}
 
 Code created by JadePuma
-Instructions - https://jadepuma.com/blogs/shopify-tutorials/klaviyo-sign-up-form-section-for-the-flex-theme
-Last editted - 26Jan24
+Last editted - 5/11/24
  
 {% endcomment %}
 
@@ -24,7 +23,7 @@ Last editted - 26Jan24
 {%- capture section_css -%}
 
   {% if background_image != blank %}
-  .section.has-background {
+  .jp-newsletter__wrapper.has-background {
       background-image: url( {{ background_image | img_url: '2000x' }} );
     }
   {% endif %}
@@ -37,16 +36,14 @@ Last editted - 26Jan24
     {% if object.settings.width == 'wide' %}
     width: 100%;
     {% endif %}
+      align-items: center;
   }
 
   .newsletter__text {
-    color: {% if text_alpha != 0 %}{{ object.settings.text_color }}{% else %}{{ settings.regular_color }}{% endif %}
+    color: {% if text_alpha != 0 %}{{ object.settings.text_color }}{% else %}{{ settings.regular_color }}{% endif %} !important;
   }
 
-.newsletter__wrapper {
-    padding: 0; 
-    max-width: 100%;
-}
+
 
 {%- endcapture -%}
 
@@ -63,11 +60,41 @@ Last editted - 26Jan24
     {% endif %}
   }
 
-  #shopify-section-{{ object.id }} .newsletter__wrapper {
+  #shopify-section-{{ object.id }} .jp-newsletter__wrapper {
     {% if object.settings.width == 'half' %}
       max-width: 100%;
     {% endif %}
+  display:flex;
+    flex:1;
+    width:100%;
+      justify-content:{{ object.settings.alignment }};
+    
   }
+
+  .newsletter__text-wrapper{
+        max-width:{{object.settings.max_width}}px !important;
+  }
+
+    @media only screen and (max-width: 480px) {
+        #shopify-section-{{ object.id }} {
+          padding-top: {{ object.settings.padding_top_mobile }}px;
+          padding-bottom: {{ object.settings.padding_bottom_mobile }}px;
+        }
+      .jp-newsletter-image{
+        /* display:none; */
+        width:100%;
+      }
+
+      .jp-newsletter-image-container{
+        flex-direction:column;
+      }
+       #shopify-section-{{ object.id }} .section {
+    padding-left:0;
+         padding-right:0;
+  }
+
+    }
+
 
   {% render 'css-loop',
           css: section_css,
@@ -84,24 +111,49 @@ Last editted - 26Jan24
                 {{ object.settings.css_class }}
                 {{ newsletter_class }}
                 is-width-{{ object.settings.width }}
-                {% if background_alpha != 0 or gradient_alpha != 0 or background_image != blank %}
-                  has-background
-                {% endif %}
                 {% if background_image != blank %}
                   dark-overlay-{{ image_darken }}
                 {% endif %}"
                 {% if object.settings.animation != "none" %}
                   data-scroll-class="{{ object.settings.animation }}"
                 {% endif %} >
-  <div class="newsletter-container is-flex">
+  <div class="newsletter-container is-flex  jp-newsletter-image-container     
+    {% if object.settings.image_position == 'right' %}
+        is-flex-row-reverse
+      {% endif %}">
+        {% if object.settings.image != blank %}
+      <div
+        class="
+          one-half
+          column
+          has-image-crop
+        jp-newsletter-image
+        "
+      >
+        {%
+          render 'image-element',
+          image: object.settings.image,
+          alt: object.settings.image.alt,
+          stretch_width: true,
+          calculate_wrap: true,
+          focal_point: object.settings.image.presentation.focal_point,
+        %}
+      </div>
+    {% endif %}
 
-    <div class="newsletter__wrapper column one-whole">
+
+      
+
+    <div class="jp-newsletter__wrapper column one-whole                 
+      {% if background_alpha != 0 or gradient_alpha != 0 or background_image != blank %}
+                  has-background
+                {% endif %}">
       <div class="newsletter__text-wrapper">
         
-        <div class="is-hidden-mobile-only" >
+        <div class="is-hidden-mobile-only newsletter__text" >
           {{ object.settings.klaviyo_code }}
         </div>
-        <div class="is-hidden-desktop-only" >
+        <div class="is-hidden-desktop-only newsletter__text" >
           {{ object.settings.klaviyo_code_mobile }}
         </div>
         
@@ -113,9 +165,14 @@ Last editted - 26Jan24
 {% schema %}
 
 {
-  "name": "JP Klaviyo Newsletter",
+  "name": "JP Klaviyo newsletter",
   "class": "newsletter",
+  "enabled_on": {
+    "groups": ["footer"],
+    "templates":["index", "page", "blog", "article", "collection", "product"]
+  },
   "settings": [
+    
     {
       "type": "textarea",
       "id": "klaviyo_code",
@@ -128,23 +185,13 @@ Last editted - 26Jan24
     },
     {
       "type": "header",
-      "content": "Colors"
+      "content": "Background"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Background",
+      "label": "Background color",
       "default": "#E5E5E5"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Text",
-      "default": "#000000"
-    },
-    {
-      "type": "header",
-      "content": "Background image"
     },
     {
       "type": "image_picker",
@@ -157,10 +204,65 @@ Last editted - 26Jan24
       "id": "image_darken",
       "label": "Darken image",
       "default": false
-    },
+    },  {
+        "type": "header",
+        "content": "Feature image"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image",
+        "info": "1024 x 1024px recommended"
+      },
+      {
+        "type": "select",
+        "id": "image_position",
+        "label": "Image position",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ],
+        "default": "left"
+      },
     {
       "type": "header",
       "content": "Layout"
+    },
+          {
+        "type": "select",
+        "id": "alignment",
+        "label": "Alignment",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ],
+        "default": "center"
+      },
+        {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max Width",
+      "min": 400,
+      "max": 1200,
+      "default": 600,
+      "unit": "px",
+      "step":10
     },
     {
       "type": "select",
@@ -254,10 +356,27 @@ Last editted - 26Jan24
         }
       ]
     },
-    {
+        {
       "type": "header",
-      "content": "Advanced",
-      "info": "[Learn more](https://help.outofthesandbox.com/hc/en-us/articles/360022329373)"
+      "content": "Mobile Layout"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top spacing",
+      "min": 0,
+      "max": 80,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom spacing",
+      "default": 0,
+      "min": 0,
+      "max": 80,
+      "unit": "px"
     },
     {
       "type": "text",
@@ -271,7 +390,7 @@ Last editted - 26Jan24
     }
   ],
   "presets": [{
-    "name": "JP Klaviyo Newsletter",
+    "name": "JP Klaviyo newsletter",
     "category": "JadePuma",
     "settings": {
     }
