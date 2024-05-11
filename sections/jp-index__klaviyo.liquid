@@ -12,6 +12,15 @@ Last editted - 5/11/24
   {%- assign object = section -%}
 {% endif %}
 
+
+{%
+  liquid
+  assign background = settings.shop_bg_color 
+  if section.settings.background_color != blank 
+    assign background = section.settings.background_color
+  endif
+%}
+
 {% comment %} Content Settings {% endcomment %}
 {%- assign background_image = object.settings.background_image -%}
 {%- assign image_darken = object.settings.image_darken -%}
@@ -29,7 +38,7 @@ Last editted - 5/11/24
   {% endif %}
 
   .section {
-    background-color: {{ object.settings.background_color }};
+    background-color: {{ background }};
   }
 
   .newsletter-container {
@@ -190,8 +199,7 @@ Last editted - 5/11/24
     {
       "type": "color",
       "id": "background_color",
-      "label": "Background color",
-      "default": "#E5E5E5"
+      "label": "Background color"
     },
     {
       "type": "image_picker",
