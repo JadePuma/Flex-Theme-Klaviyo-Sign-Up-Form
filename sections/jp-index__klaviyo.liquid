@@ -1,7 +1,7 @@
 {% comment %}
 
 Code created by JadePuma
-Last editted - 5/11/24
+Last editted - 5/13/24
  
 {% endcomment %}
 
@@ -60,8 +60,6 @@ Last editted - 5/11/24
   #shopify-section-{{ object.id }} {
     padding-top: {{ object.settings.padding_top }}px;
     padding-bottom: {{ object.settings.padding_bottom }}px;
-    padding-left: {{ object.settings.padding_left }}px;
-    padding-right: {{ object.settings.padding_right }}px;
     {% if object.settings.width == 'wide' %}
       width: 100%;
     {% elsif object.settings.width == 'half' %}
@@ -126,33 +124,7 @@ Last editted - 5/11/24
                 {% if object.settings.animation != "none" %}
                   data-scroll-class="{{ object.settings.animation }}"
                 {% endif %} >
-  <div class="newsletter-container is-flex  jp-newsletter-image-container     
-    {% if object.settings.image_position == 'right' %}
-        is-flex-row-reverse
-      {% endif %}">
-        {% if object.settings.image != blank %}
-      <div
-        class="
-          one-half
-          column
-          has-image-crop
-        jp-newsletter-image
-        "
-      >
-        {%
-          render 'image-element',
-          image: object.settings.image,
-          alt: object.settings.image.alt,
-          stretch_width: true,
-          calculate_wrap: true,
-          focal_point: object.settings.image.presentation.focal_point,
-        %}
-      </div>
-    {% endif %}
-
-
-      
-
+  <div class="newsletter-container is-flex  jp-newsletter-image-container">
     <div class="jp-newsletter__wrapper column one-whole                 
       {% if background_alpha != 0 or gradient_alpha != 0 or background_image != blank %}
                   has-background
@@ -174,7 +146,7 @@ Last editted - 5/11/24
 {% schema %}
 
 {
-  "name": "JP Klaviyo newsletter",
+  "name": "JP Klaviyo sign up",
   "class": "newsletter",
   "enabled_on": {
     "groups": ["footer"],
@@ -212,32 +184,7 @@ Last editted - 5/11/24
       "id": "image_darken",
       "label": "Darken image",
       "default": false
-    },  {
-        "type": "header",
-        "content": "Feature image"
-      },
-      {
-        "type": "image_picker",
-        "id": "image",
-        "label": "Image",
-        "info": "1024 x 1024px recommended"
-      },
-      {
-        "type": "select",
-        "id": "image_position",
-        "label": "Image position",
-        "options": [
-          {
-            "value": "left",
-            "label": "Left"
-          },
-          {
-            "value": "right",
-            "label": "Right"
-          }
-        ],
-        "default": "left"
-      },
+    }, 
     {
       "type": "header",
       "content": "Layout"
@@ -305,24 +252,6 @@ Last editted - 5/11/24
       "type": "range",
       "id": "padding_bottom",
       "label": "Bottom spacing",
-      "default": 0,
-      "min": 0,
-      "max": 80,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "padding_left",
-      "label": "Left spacing",
-      "min": 0,
-      "max": 80,
-      "default": 0,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "padding_right",
-      "label": "Right spacing",
       "default": 0,
       "min": 0,
       "max": 80,
@@ -398,7 +327,7 @@ Last editted - 5/11/24
     }
   ],
   "presets": [{
-    "name": "JP Klaviyo newsletter",
+    "name": "JP Klaviyo sign up",
     "category": "JadePuma",
     "settings": {
     }
